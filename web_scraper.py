@@ -1,10 +1,15 @@
-import datetime
+import datetime, os
 from urllib.request import urlopen
 from pymongo import MongoClient
 from pyquery import PyQuery as pq
 from tracker import Tracker
 
-client = MongoClient('localhost', 27017)
+client = None
+mongo_uri = os.environ.get('MONGO_URI')
+if mongo_uri:
+    client = MongoClient(mongo_uri)
+else:
+    client = MongoClient('localhost', 27017)
 
 db = client.priceTrackerDb
 trackers_collection = db.trackermodels
