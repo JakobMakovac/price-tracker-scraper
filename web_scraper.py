@@ -1,4 +1,4 @@
-import datetime, os
+import datetime, os, re, sys
 from urllib.request import urlopen
 from pymongo import MongoClient
 from pyquery import PyQuery as pq
@@ -20,7 +20,8 @@ def run_scraper_and_save():
 
     for _tracker in trackers:
         get_price_and_process_tracker(_tracker)
-        
+
+    sys.exit('Done')     
 
 def get_trackers():        
     trackers = trackers_collection.find({})
@@ -57,7 +58,7 @@ def get_price_and_process_tracker(tracker):
 def get_price_for_tracker(tracker):
     d = pq(url=tracker.url, opener=lambda url, **kw: urlopen(tracker.url).read())
     _price = d('.pro-price').text().strip()
-    return _price
+    return parse_price(_price)
 
 def update_tracker(tracker, update):
     # Update tracker collection
@@ -82,3 +83,11 @@ def update_pricepoints(url, new_price):
             },
             upsert=True
         )
+
+def parse_price(price):
+    pattern = r"[\d.|,]+"
+    s = re.search(pattern, price)
+    if s:
+        return float(s.group().replace('.', '').replace(',', '.'))
+    else:
+        raise RuntimeError('Could not parse the price: ', price)
