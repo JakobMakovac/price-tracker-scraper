@@ -34,7 +34,8 @@ def get_trackers():
             tracker['watcherId'],
             tracker['currentPrice'],
             tracker['alertPrice'],
-            tracker['lowestPrice']))
+            tracker['lowestPrice'],
+            tracker['highestPrice']))
     
     return out
 
